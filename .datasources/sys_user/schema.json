@@ -118,6 +118,64 @@
       "title": "是否管理员",
       "type": "Boolean"
     }
-  ]
+  ],
+  "permissions": {
+    "read": {
+      "rules": [
+        {
+          "actions": ["read"],
+          "effect": "allow",
+          "conditions": [
+            {
+              "field": "is_admin",
+              "operator": "eq",
+              "value": true
+            }
+          ],
+          "description": "允许管理员读取所有用户数据"
+        },
+        {
+          "actions": ["read"],
+          "effect": "allow",
+          "conditions": [
+            {
+              "field": "_id",
+              "operator": "eq",
+              "value": "$user._id"
+            }
+          ],
+          "description": "允许用户读取自己的数据"
+        }
+      ]
+    },
+    "write": {
+      "rules": [
+        {
+          "actions": ["create", "update", "delete"],
+          "effect": "allow",
+          "conditions": [
+            {
+              "field": "is_admin",
+              "operator": "eq",
+              "value": true
+            }
+          ],
+          "description": "允许管理员进行所有写操作"
+        },
+        {
+          "actions": ["update"],
+          "effect": "allow",
+          "conditions": [
+            {
+              "field": "_id",
+              "operator": "eq",
+              "value": "$user._id"
+            }
+          ],
+          "description": "允许用户更新自己的数据"
+        }
+      ]
+    }
+  }
 }
   
