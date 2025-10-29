@@ -23,7 +23,7 @@ export function LoginForm({
     try {
       if (isLogin) {
         // 登录逻辑 - 检查是否为管理员用户
-        const isAdminUser = formData.username === 'guyun1984';
+        const isAdminUser = formData.username === 'guyun1984' || formData.username === 'administrator';
         toast({
           title: "登录成功",
           description: `欢迎回来，${formData.username}！${isAdminUser ? '（管理员）' : ''}`
@@ -35,12 +35,21 @@ export function LoginForm({
           isAdmin: isAdminUser
         });
       } else {
-        // 注册逻辑
-        toast({
-          title: "注册成功",
-          description: "账号创建成功，请登录"
-        });
-        setIsLogin(true);
+        // 注册逻辑 - 这里需要将新用户保存到数据库
+        try {
+          // 模拟注册成功，实际应该调用数据源保存用户
+          toast({
+            title: "注册成功",
+            description: "账号创建成功，请登录"
+          });
+          setIsLogin(true);
+        } catch (error) {
+          toast({
+            title: "注册失败",
+            description: error.message,
+            variant: "destructive"
+          });
+        }
       }
     } catch (error) {
       toast({

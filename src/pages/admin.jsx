@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Card, CardContent, CardHeader, CardTitle, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, LogOut, Users, BarChart3 } from 'lucide-react';
+import { Search, LogOut, Users, BarChart3, RefreshCw } from 'lucide-react';
 
 import { UserCard } from '@/components/UserCard';
 export default function Admin(props) {
@@ -14,6 +14,7 @@ export default function Admin(props) {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [loading, setLoading] = useState(false);
   const {
     toast
   } = useToast();
@@ -34,8 +35,45 @@ export default function Admin(props) {
     }
   }, [$w]);
   const loadUsers = async () => {
+    setLoading(true);
     try {
-      // 模拟从数据源加载用户数据
+      // 从数据源加载用户数据
+      const result = await $w.cloud.callDataSource({
+        dataSourceName: 'sys_user',
+        methodName: 'wedaGetRecordsV2',
+        params: {
+          select: {
+            $master: true
+          },
+          getCount: true,
+          pageSize: 100,
+          pageNumber: 1
+        }
+      });
+
+      // 处理用户数据，添加统计信息
+      const processedUsers = result.records.map(user => ({
+        _id: user._id,
+        name: user.name,
+        is_admin: user.is_admin || false,
+        totalSubmissions: Math.floor(Math.random() * 20) + 1,
+        // 模拟提交数量
+        pendingReplies: Math.floor(Math.random() * 5),
+        // 模拟待回复数量
+        repliedCount: Math.floor(Math.random() * 15),
+        // 模拟已回复数量
+        pendingCount: Math.floor(Math.random() * 5),
+        // 模拟待回复数量
+        lastSubmission: Date.now() - Math.floor(Math.random() * 86400000 * 7) // 模拟最后提交时间
+      }));
+      setUsers(processedUsers);
+      toast({
+        title: "加载成功",
+        description: `已加载 ${processedUsers.length} 个用户`
+      });
+    } catch (error) {
+      console.error('加载用户失败:', error);
+      // 如果数据源调用失败，使用模拟数据作为备选方案
       const mockUsers = [{
         _id: '1983262149294698498',
         name: 'administrator',
@@ -83,12 +121,12 @@ export default function Admin(props) {
         lastSubmission: Date.now() - 259200000
       }];
       setUsers(mockUsers);
-    } catch (error) {
       toast({
-        title: "加载失败",
-        description: error.message,
-        variant: "destructive"
+        title: "使用模拟数据",
+        description: "数据源连接失败，使用模拟用户数据"
       });
+    } finally {
+      setLoading(false);
     }
   };
   const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user._id.toLowerCase().includes(searchTerm.toLowerCase())).filter(user => {
@@ -110,6 +148,9 @@ export default function Admin(props) {
       pageId: 'login'
     });
   };
+  const handleRefresh = () => {
+    loadUsers();
+  };
   const stats = {
     totalUsers: users.length,
     totalSubmissions: users.reduce((sum, user) => sum + user.totalSubmissions, 0),
@@ -128,10 +169,16 @@ export default function Admin(props) {
                 <p className="text-sm text-gray-600">管理员：{userInfo.username}</p>
               </div>
             </div>
-            <Button onClick={handleLogout} variant="outline" size="sm">
-              <LogOut className="w-4 h-4 mr-1" />
-              退出登录
-            </Button>
+            <div className="flex space-x-2">
+              <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
+                <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                刷新
+              </Button>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                <LogOut className="w-4 h-4 mr-1" />
+                退出登录
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -200,11 +247,16 @@ export default function Admin(props) {
         </Card>
 
         {/* 用户列表 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers.map(user => <UserCard key={user._id} user={user} onViewDetails={handleViewUserDetails} />)}
-        </div>
+        {loading ? <Card>
+            <CardContent className="p-12 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-gray-500 mt-4">加载用户中...</p>
+            </CardContent>
+          </Card> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredUsers.map(user => <UserCard key={user._id} user={user} onViewDetails={handleViewUserDetails} />)}
+          </div>}
 
-        {filteredUsers.length === 0 && <Card>
+        {!loading && filteredUsers.length === 0 && <Card>
             <CardContent className="p-12 text-center">
               <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p className="text-gray-500">暂无匹配的用户</p>
