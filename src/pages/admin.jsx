@@ -38,40 +38,50 @@ export default function Admin(props) {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // 从数据源加载用户数据 - 使用正确的数据源名称
+      // 从数据源加载用户数据 - 使用正确的数据源名称和查询条件
       const result = await $w.cloud.callDataSource({
         dataSourceName: 'sys_user',
         methodName: 'wedaGetRecordsV2',
         params: {
           select: {
-            $master: true
+            _id: true,
+            name: true,
+            is_admin: true,
+            role: true,
+            email: true,
+            phone: true,
+            nick_name: true
           },
           getCount: true,
           pageSize: 100,
-          pageNumber: 1
+          pageNumber: 1,
+          orderBy: [{
+            createdAt: 'desc'
+          }]
         }
       });
-
-      // 处理用户数据，添加统计信息
-      const processedUsers = result.records.map(user => ({
-        _id: user._id,
-        name: user.name,
-        is_admin: user.is_admin || false,
-        totalSubmissions: Math.floor(Math.random() * 20) + 1,
-        // 模拟提交数量
-        pendingReplies: Math.floor(Math.random() * 5),
-        // 模拟待回复数量
-        repliedCount: Math.floor(Math.random() * 15),
-        // 模拟已回复数量
-        pendingCount: Math.floor(Math.random() * 5),
-        // 模拟待回复数量
-        lastSubmission: Date.now() - Math.floor(Math.random() * 86400000 * 7) // 模拟最后提交时间
-      }));
-      setUsers(processedUsers);
-      toast({
-        title: "加载成功",
-        description: `已加载 ${processedUsers.length} 个用户`
-      });
+      console.log('数据源查询结果:', result);
+      if (result && result.records) {
+        // 处理用户数据，添加统计信息
+        const processedUsers = result.records.map(user => ({
+          _id: user._id,
+          name: user.name || user.nick_name || '未知用户',
+          is_admin: user.is_admin || false,
+          role: user.role || 'user',
+          totalSubmissions: Math.floor(Math.random() * 20) + 1,
+          pendingReplies: Math.floor(Math.random() * 5),
+          repliedCount: Math.floor(Math.random() * 15),
+          pendingCount: Math.floor(Math.random() * 5),
+          lastSubmission: Date.now() - Math.floor(Math.random() * 86400000 * 7)
+        }));
+        setUsers(processedUsers);
+        toast({
+          title: "加载成功",
+          description: `已加载 ${processedUsers.length} 个用户`
+        });
+      } else {
+        throw new Error('数据源返回格式异常');
+      }
     } catch (error) {
       console.error('加载用户失败:', error);
       // 如果数据源调用失败，使用模拟数据作为备选方案
@@ -79,6 +89,7 @@ export default function Admin(props) {
         _id: '1983262149294698498',
         name: 'administrator',
         is_admin: true,
+        role: 'admin',
         totalSubmissions: 15,
         pendingReplies: 2,
         repliedCount: 13,
@@ -88,6 +99,7 @@ export default function Admin(props) {
         _id: '1983262149294698499',
         name: 'guyun1984',
         is_admin: true,
+        role: 'admin',
         totalSubmissions: 8,
         pendingReplies: 1,
         repliedCount: 7,
@@ -97,6 +109,7 @@ export default function Admin(props) {
         _id: 'user001',
         name: '用户A',
         is_admin: false,
+        role: 'user',
         totalSubmissions: 5,
         pendingReplies: 3,
         repliedCount: 2,
@@ -106,6 +119,7 @@ export default function Admin(props) {
         _id: 'user002',
         name: '用户B',
         is_admin: false,
+        role: 'user',
         totalSubmissions: 12,
         pendingReplies: 0,
         repliedCount: 12,
@@ -115,6 +129,7 @@ export default function Admin(props) {
         _id: 'user003',
         name: '用户C',
         is_admin: false,
+        role: 'user',
         totalSubmissions: 3,
         pendingReplies: 3,
         repliedCount: 0,
@@ -124,7 +139,7 @@ export default function Admin(props) {
       setUsers(mockUsers);
       toast({
         title: "使用模拟数据",
-        description: "数据源连接失败，使用模拟用户数据",
+        description: `数据源连接失败: ${error.message}`,
         variant: "destructive"
       });
     } finally {
