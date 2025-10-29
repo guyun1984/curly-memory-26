@@ -38,7 +38,7 @@ export default function Admin(props) {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // 从数据源加载用户数据
+      // 从数据源加载用户数据 - 使用正确的数据源名称
       const result = await $w.cloud.callDataSource({
         dataSourceName: 'sys_user',
         methodName: 'wedaGetRecordsV2',
@@ -124,7 +124,8 @@ export default function Admin(props) {
       setUsers(mockUsers);
       toast({
         title: "使用模拟数据",
-        description: "数据源连接失败，使用模拟用户数据"
+        description: "数据源连接失败，使用模拟用户数据",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
