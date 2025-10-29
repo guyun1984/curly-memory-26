@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Button, Input, Card, CardContent, CardHeader, CardTitle, useToast } from '@/components/ui';
 // @ts-ignore;
-import { Search, LogOut, Users, BarChart3, RefreshCw } from 'lucide-react';
+import { Search, LogOut, Users, BarChart3, RefreshCw, Filter } from 'lucide-react';
 
 import { UserCard } from '@/components/UserCard';
 export default function Admin(props) {
@@ -15,6 +15,7 @@ export default function Admin(props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [statsFilter, setStatsFilter] = useState(null);
   const {
     toast
   } = useToast();
@@ -129,6 +130,23 @@ export default function Admin(props) {
       setLoading(false);
     }
   };
+  const handleStatsClick = filterType => {
+    setStatsFilter(filterType);
+    switch (filterType) {
+      case 'totalSubmissions':
+        setActiveTab('all');
+        break;
+      case 'pendingReplies':
+        setActiveTab('pending');
+        break;
+      default:
+        setActiveTab('all');
+    }
+  };
+  const clearStatsFilter = () => {
+    setStatsFilter(null);
+    setActiveTab('all');
+  };
   const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user._id.toLowerCase().includes(searchTerm.toLowerCase())).filter(user => {
     if (activeTab === 'pending') return user.pendingReplies > 0;
     if (activeTab === 'replied') return user.repliedCount > 0;
@@ -186,42 +204,67 @@ export default function Admin(props) {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card>
+          <Card className={`cursor-pointer transition-all hover:shadow-md ${statsFilter === 'totalUsers' ? 'ring-2 ring-blue-500' : ''}`} onClick={() => handleStatsClick('totalUsers')}>
             <CardContent className="p-6">
-              <div className="flex items-center">
-                <Users className="w-8 h-8 text-blue-600 mr-4" />
-                <div>
-                  <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                  <div className="text-sm text-muted-foreground">总用户数</div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Users className="w-8 h-8 text-blue-600 mr-4" />
+                  <div>
+                    <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                    <div className="text-sm text-muted-foreground">总用户数</div>
+                  </div>
                 </div>
+                {statsFilter === 'totalUsers' && <Filter className="w-4 h-4 text-blue-500" />}
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className={`cursor-pointer transition-all hover:shadow-md ${statsFilter === 'totalSubmissions' ? 'ring-2 ring-green-500' : ''}`} onClick={() => handleStatsClick('totalSubmissions')}>
             <CardContent className="p-6">
-              <div className="flex items-center">
-                <BarChart3 className="w-8 h-8 text-green-600 mr-4" />
-                <div>
-                  <div className="text-2xl font-bold">{stats.totalSubmissions}</div>
-                  <div className="text-sm text-muted-foreground">总提交数</div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <BarChart3 className="w-8 h-8 text-green-600 mr-4" />
+                  <div>
+                    <div className="text-2xl font-bold">{stats.totalSubmissions}</div>
+                    <div className="text-sm text-muted-foreground">总提交数</div>
+                  </div>
                 </div>
+                {statsFilter === 'totalSubmissions' && <Filter className="w-4 h-4 text-green-500" />}
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className={`cursor-pointer transition-all hover:shadow-md ${statsFilter === 'pendingReplies' ? 'ring-2 ring-yellow-500' : ''}`} onClick={() => handleStatsClick('pendingReplies')}>
             <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
-                  <BarChart3 className="w-4 h-4 text-yellow-600" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                    <BarChart3 className="w-4 h-4 text-yellow-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{stats.pendingReplies}</div>
+                    <div className="text-sm text-muted-foreground">待回复数</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold">{stats.pendingReplies}</div>
-                  <div className="text-sm text-muted-foreground">待回复数</div>
-                </div>
+                {statsFilter === 'pendingReplies' && <Filter className="w-4 h-4 text-yellow-500" />}
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* 筛选状态显示 */}
+        {statsFilter && <div className="mb-4 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center">
+              <Filter className="w-4 h-4 text-blue-500 mr-2" />
+              <span className="text-blue-700">
+                当前筛选: 
+                {statsFilter === 'totalUsers' && ' 总用户数'}
+                {statsFilter === 'totalSubmissions' && ' 总提交数'}
+                {statsFilter === 'pendingReplies' && ' 待回复数'}
+              </span>
+            </div>
+            <Button onClick={clearStatsFilter} variant="ghost" size="sm">
+              清除筛选
+            </Button>
+          </div>}
 
         {/* 搜索和筛选 */}
         <Card className="mb-6">
