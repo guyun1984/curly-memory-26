@@ -1,0 +1,44 @@
+
+[
+  {
+    "_id": "1983262149294698498",
+    "app_id": "1384543045",
+    "createBy": "administrator",
+    "createdAt": 1761681602115,
+    "env_id": "guyun1984-0gqo002r110095f5",
+    "internal_user_type": 1,
+    "name": "administrator",
+    "parent_user_id": "",
+    "source": 1,
+    "sub_uin": "100044770434",
+    "type": 0,
+    "uin": "100044770434",
+    "updateBy": "administrator",
+    "updatedAt": 1761681602115,
+    "user_desc": "超级管理员用户",
+    "uuid": "1983262149294698498",
+    "role": "admin",
+    "is_admin": true
+  },
+  {
+    "_id": "1983262149294698499",
+    "app_id": "1384543045",
+    "createBy": "administrator",
+    "createdAt": 1761681602115,
+    "env_id": "guyun1984-0gqo002r110095f5",
+    "internal_user_type": 1,
+    "name": "guyun1984",
+    "parent_user_id": "",
+    "source": 1,
+    "sub_uin": "100044770435",
+    "type": 0,
+    "uin": "100044770435",
+    "updateBy": "administrator",
+    "updatedAt": 1761681602115,
+    "user_desc": "管理员用户",
+    "uuid": "1983262149294698499",
+    "role": "admin",
+    "is_admin": true
+  }
+]
+  

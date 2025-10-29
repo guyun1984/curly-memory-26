@@ -1,0 +1,123 @@
+
+{
+  "name": "sys_user",
+  "title": "用户",
+  "schemas": [
+    {
+      "name": "open_id",
+      "title": "微信id",
+      "type": "String"
+    },
+    {
+      "name": "source",
+      "title": "用户来源",
+      "type": "Number"
+    },
+    {
+      "name": "type",
+      "title": "用户类型",
+      "type": "Number"
+    },
+    {
+      "name": "uuid",
+      "title": "uuid",
+      "type": "String"
+    },
+    {
+      "name": "main_dep",
+      "title": "主岗部门",
+      "type": "String"
+    },
+    {
+      "name": "_sort",
+      "title": "权重",
+      "type": "Number"
+    },
+    {
+      "name": "project_id",
+      "title": "项目id",
+      "type": "Number"
+    },
+    {
+      "name": "_avatar",
+      "title": "头像",
+      "type": "Image"
+    },
+    {
+      "name": "uin",
+      "title": "集团用户id",
+      "type": "String"
+    },
+    {
+      "name": "email",
+      "title": "邮箱",
+      "type": "String"
+    },
+    {
+      "name": "parent_user_id",
+      "title": "直属上级id",
+      "type": "String"
+    },
+    {
+      "name": "user_desc",
+      "title": "用户描述",
+      "type": "String"
+    },
+    {
+      "name": "wechat_user_id",
+      "title": "企业微信用户id",
+      "type": "String"
+    },
+    {
+      "name": "env_id",
+      "title": "env_id",
+      "type": "String"
+    },
+    {
+      "name": "phone",
+      "title": "手机号",
+      "type": "String"
+    },
+    {
+      "name": "nick_name",
+      "title": "用户昵称",
+      "type": "String"
+    },
+    {
+      "name": "latest_visitAt",
+      "title": "latest_visitAt",
+      "type": "DateTime"
+    },
+    {
+      "name": "name",
+      "title": "用户名称",
+      "type": "String"
+    },
+    {
+      "name": "internal_user_type",
+      "title": "内部用户类型",
+      "type": "Number"
+    },
+    {
+      "name": "corp_id",
+      "title": "企业id",
+      "type": "String"
+    },
+    {
+      "name": "sub_uin",
+      "title": "子用户id",
+      "type": "String"
+    },
+    {
+      "name": "role",
+      "title": "用户角色",
+      "type": "String"
+    },
+    {
+      "name": "is_admin",
+      "title": "是否管理员",
+      "type": "Boolean"
+    }
+  ]
+}
+  
